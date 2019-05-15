@@ -107,14 +107,13 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
 
 
 
-        guard let nodeToScale = videoNode else { return }
+         let nodeToScale = videoNode
         if gesture.state == .changed {
 
             let pinchScaleX: CGFloat = gesture.scale * CGFloat((nodeToScale.xScale))
             let pinchScaleY: CGFloat = gesture.scale * CGFloat((nodeToScale.yScale))
 
-            nodeToScale.size(
-                ) = SCNVector3Make(Float(pinchScaleX), Float(pinchScaleY))
+            nodeToScale.size = SCNVector3Make(Float(pinchScaleX), Float(pinchScaleY))
             gesture.scale = 1
 
         }
