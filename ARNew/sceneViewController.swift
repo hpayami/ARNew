@@ -10,25 +10,54 @@ import UIKit
 import ARKit
 import SpriteKit
 import Foundation
+import AVKit
+import MobileCoreServices
+
 class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate  {
 
-
-
-
-    
-
-
-
     //MARK: Declaration
+
+    // For rotataion of videonode
+    var currentAngleY: Float = 0.0
+
+    //MARK: Position Center
+    let position = CGPoint()
+
+    //MARK:Declaration of ARSCNView
+
+    let arView: ARSCNView = {
+        let view = ARSCNView()
+
+        return view
+    }()
+
+    //MARK:Declation of recorder
+    var recorder : RecordAR?
+
 
     let configuration = ARWorldTrackingConfiguration()
     let augmentedRealitySession = ARSession()
 
 
+    //MARK: Video Editor Declaration
+    // Create a custom transitioning animation object
+    //   This is an instance of our CustomViewControllerAnimatedTransitioning class
+    let transition = CustomViewControllerAnimatedTransitioning()
+
+
+
+
+
 
     //MARK: Declaration VideoNode,VideoType,VideoFilter
     var planeNode = SCNNode()
-    var videoNode : SKVideoNode!
+
+
+    // Create SceneKit videoNode to hold the spritekit scene.
+    let videoNode = SCNNode()
+
+
+
     var videoFile : String = ""
     var videoProcessingFunction : String = ""
 
@@ -40,64 +69,164 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
 
 
 
-    let arView: ARSCNView = {
-        let view = ARSCNView()
-        return view
+
+
+
+
+
+
+    //MARK:Declaration UIButton For Start a video recording
+
+    lazy var recorderButton: UIButton = {
+
+        // Add button for screenshot
+
+        let btn = UIButton(type: .system)
+        btn.setTitle("Record", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.backgroundColor = .white
+        btn.frame = CGRect(x:0,y:0,width: 110,height: 60)
+        btn.center = CGPoint(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height * 0.90)
+        btn.layer.cornerRadius = btn.bounds.height / 2
+        btn.tag = 0
+        return btn
+
+    }()
+
+    //MARK:Declaration UIButton For pausing a video recording
+
+    lazy var pauseButton: UIButton = {
+
+
+
+        let btn = UIButton(type: .system)
+        btn.setTitle("Pause", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.backgroundColor = .white
+        btn.frame = CGRect(x:0,y:0,width: 60,height: 60)
+        btn.center = CGPoint(x: UIScreen.main.bounds.width * 0.15, y: UIScreen.main.bounds.height * 0.90)
+        btn.layer.cornerRadius = btn.bounds.height / 2
+        btn.alpha = 0.3
+        btn.isEnabled = false
+        return btn
+
     }()
 
 
+    //gif UIButton for capturing a gif image
+    lazy var gifButton: UIButton = {
 
-    lazy var resetbutton: UIButton = {
+        // Add button for screenshot
 
-        var button = UIButton(type: .system)
-        button.backgroundColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 0.5)
-        button.setTitle("Reset", for: .normal)
-        button.tintColor = .white
-        button.layer.cornerRadius = 5
-        button.clipsToBounds = true
-        button.addTarget(self, action: #selector(handleResetButtonTapped), for: UIControl.Event.touchUpInside)
-        button.layer.zPosition = 1
-        button.imageView?.contentMode = .scaleAspectFill
-        return button
+        let btn = UIButton(type: .system)
+        btn.setTitle("Gif", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.backgroundColor = .white
+        btn.frame = CGRect(x:0,y:0,width: 110,height: 60)
+        btn.center = CGPoint(x: UIScreen.main.bounds.width * 0.85, y: UIScreen.main.bounds.height * 0.90)
+        btn.layer.cornerRadius = btn.bounds.height / 2
+        return btn
+
     }()
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+
+
+
+
+
         arView.delegate = self
-        let scn = SCNScene(named: "art.scnassets/scen.scn")!
-        arView.scene = scn
-        view.addSubview(arView)
-        view.addSubview(resetbutton)
+
+
+
+        // Set showsStatistics to true to show stats on fps and timing information
+        arView.showsStatistics = false
+        arView.preferredFramesPerSecond = 30
+        arView.contentScaleFactor = 1.0
+
+        //Call Methods
+        handleActions()
+        setupControlls()
         initializingControlls()
         arView.session.run(configuration, options: [])
-        arView.debugOptions = [debug(.Both)]
+
+        //initialize ARSCNView
+        recorder = RecordAR(ARSceneKit: arView)
+        recorder?.inputViewOrientations = [.portrait]
+
     }
+
+
 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configuration.planeDetection = .horizontal
+
+        recorder?.prepare(configuration)
+
         arView.session.run(configuration)
+
+
     }
 
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        recorder?.rest()
+
         arView.session.pause()
+
+
     }
 
+    //MARK:Show Video On the Scene
+
+    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+
+        // Get Video URL and create AV Player
+        let filePath = Bundle.main.path(forResource: "simple", ofType: "mp4")
+        let videoURL = NSURL(fileURLWithPath: filePath!)
+        let player = AVPlayer(url: videoURL as URL)
+
+        // Set geometry of the SceneKit node to be a plane, and rotate it to be flat with the image
+        videoNode.geometry = SCNPlane(width: 0.9,
+                                      height:0.9)
 
 
+        videoNode.position = SCNVector3(x: 0, y: 0, z: -0.2)
+        //Set the video AVPlayer as the contents of the video node's material.
+        videoNode.geometry?.firstMaterial?.diffuse.contents = player
+        videoNode.geometry?.firstMaterial?.isDoubleSided = true
 
+        // Alpha transparancy stuff
+        let chromaKeyMaterial = ChromaKeyMaterial()
+        chromaKeyMaterial.diffuse.contents = player
+        videoNode.geometry!.materials = [chromaKeyMaterial]
 
-    lazy var gesture: UIPinchGestureRecognizer = {
+        //video does not start without delaying the player
+        //playing the video before just results in [SceneKit] Error: Cannot get pixel buffer (CVPixelBufferRef)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+            player.seek(to:CMTimeMakeWithSeconds(1, preferredTimescale: 1000))
+            player.play()
+        }
+        // Loop video
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+            player.seek(to: CMTime.zero)
+            player.play()
+        }
 
-        var gest = UIPinchGestureRecognizer(target: self, action:  #selector(scalePiece))
+        // Add videoNode to ARAnchor
+      //  node.addChildNode(videoNode)
 
-        return gest
-    }()
+        // Add ARAnchor node to the root node of the scene
+        self.arView.scene.rootNode.addChildNode(videoNode)
+        return videoNode
+    }
 
 
     /// Scales An SCNNode
@@ -105,10 +234,55 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
     /// - Parameter gesture: UIPinchGestureRecognizer
     @objc func scalePiece(_ gesture  : UIPinchGestureRecognizer) {
 
+        if gesture.state == .changed {
+            let pinchScaleX: CGFloat = gesture.scale * CGFloat((videoNode.scale.x))
+            let pinchScaleY: CGFloat = gesture.scale * CGFloat((videoNode.scale.y))
+            let pinchScaleZ: CGFloat = gesture.scale * CGFloat((videoNode.scale.z))
+            videoNode.scale = SCNVector3Make(Float(pinchScaleX), Float(pinchScaleY),Float(pinchScaleZ))
 
-        
+            gesture.scale = 1
 
         }
+
+        if gesture.state == .ended { }
+
+    }
+
+
+    
+    /// Removes Node on SCNNode
+    ///
+    /// - Parameter:UILongPressGestureRecognizer
+    @objc func removeNode(removegestureRecognize : UILongPressGestureRecognizer){
+
+        if removegestureRecognize.state != .began {
+            return
+        }
+        let holdPoint: CGPoint? = removegestureRecognize.location(in: arView)
+        let result = arView.hitTest(holdPoint ?? CGPoint.zero, options: [
+            SCNHitTestOption.boundingBoxOnly: NSNumber(value: true),
+            SCNHitTestOption.firstFoundOnly: NSNumber(value: true)
+            ])
+        if result.count == 0 {
+            return
+        }
+
+        let hitResult: SCNHitTestResult? = result.first
+        hitResult?.node.parent?.removeFromParentNode()
+
+    }
+
+
+
+    /// Moves An SCNNode
+    ///
+    /// - Parameter:UIPanGestureRecognizer
+    @objc func moveNode(gestureRecognizer : UIPanGestureRecognizer){
+
+
+
+    }
+
 
 
     //MARK: Reset Scene
@@ -123,73 +297,45 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
         arView.session.run(configuration, options: [.removeExistingAnchors,.resetTracking])
     }
 
-    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-
-
-        let videoURL : URL = Bundle.main.url(forResource: "simple", withExtension: "mp4")!
-        let url =  videoURL
-        let asset = AVAsset(url: url)
-        let filter = colorCubeFilterForChromaKey(hueAngle: 120)
-
-        let item = AVPlayerItem(asset: asset)
-
-        let player = AVPlayer(playerItem: item)
-
-        let videoNode = SKVideoNode(avPlayer: player)
-        videoNode.play()
 
 
 
-        // create a video scene
-        let videoScene = SKScene(size: CGSize(width: 200, height: 300))
 
-        // make video the same size as the scene, but could be smaller
-        videoNode.size   = CGSize(width: videoScene.size.width, height: videoScene.size.height)
+    //Add Video On Screen
+    @objc func addVideo(){
+        // Get Video URL and create AV Player
+        let filePath = Bundle.main.path(forResource: "simple", ofType: "mp4")
+        let videoURL = NSURL(fileURLWithPath: filePath!)
+        let player = AVPlayer(url: videoURL as URL)
 
-        // center video inside the scene
-        videoNode.position = CGPoint(x: videoScene.size.width/2 , y: videoScene.size.height/2 )
+        // Set geometry of the SceneKit node to be a plane, and rotate it to be flat with the image
+        videoNode.geometry = SCNPlane(width: 0.9,
+                                      height:0.9)
 
-        // invert our video so it does not look upside down
-        videoNode.yScale = -1.0
 
-        // add video Node to effect Node AND apply effect to effect Node
-        let effectNode = SKEffectNode()
+        //Set the video AVPlayer as the contents of the video node's material.
+        videoNode.geometry?.firstMaterial?.diffuse.contents = player
+        videoNode.geometry?.firstMaterial?.isDoubleSided = true
 
-        effectNode.addChild(videoNode)
-        effectNode.filter = filter
+        // Alpha transparancy stuff
+        let chromaKeyMaterial = ChromaKeyMaterial()
+        chromaKeyMaterial.diffuse.contents = player
+        videoNode.geometry!.materials = [chromaKeyMaterial]
 
-        // add the video to our scene
-        videoScene.addChild(effectNode)
+        //video does not start without delaying the player
+        //playing the video before just results in [SceneKit] Error: Cannot get pixel buffer (CVPixelBufferRef)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+            player.seek(to:CMTimeMakeWithSeconds(1, preferredTimescale: 1000))
+            player.play()
+        }
+        // Loop video
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+            player.seek(to: CMTime.zero)
+            player.play()
+        }
 
-        // clear background color of the scene. By default it is set to black
-        videoScene.backgroundColor = .clear
-
-        // create a plane with some real world height and width
-        // NOTE: plane is just a wireframe. Like a human skeleton. It's just the shape.
-        // unit of measurements is Meters
-        let plane = SCNPlane(width: 0.50, height: 1.0)
-
-        // set the first materials content to be our video scene
-        // contents material could be color, image, video (in this case), etc.
-        // NOTE: Material is what covers the plane. Like skin on a skeleton. It gives it the look.
-        plane.firstMaterial?.diffuse.contents = videoScene
-
-        // if you want to be able to go behind the video and see it from behind
-        plane.firstMaterial?.isDoubleSided = true
-
-        // create a node out of the plane
-      //  let planeNode = SCNNode(geometry: plane)
-        planeNode.geometry = plane
-
-        // place the video 3 meters away
-        planeNode.position = SCNVector3(0,0,-1.25)
-
-        // since the created node will be vertical, rotate it along the x axis to have it be horizontal or parallel to our detected image
-        // planeNode.eulerAngles.x = -Float.pi / 2
-
-        // finally add the plane node (which contains the video node) to the added node
-        self.arView.scene.rootNode.addChildNode(planeNode)
-
+        // Add ARAnchor node to the root node of the scene
+        self.arView.scene.rootNode.addChildNode(videoNode)
 
     }
 
@@ -198,9 +344,35 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
 
 
 
+
+
+
+    //MARK:Action Methods
+    func  handleActions(){
+
+        recorderButton.addTarget(self, action: #selector(recorderAction(sender:)), for: .touchUpInside)
+        pauseButton.addTarget(self, action: #selector(pauseAction(sender:)), for: .touchUpInside)
+        gifButton.addTarget(self, action: #selector(gifAction(sender:)), for: .touchUpInside)
+    }
+
+
+    //MARK: setupControlls
+    ///
+    ///
+    func setupControlls(){
+        view.addSubview(arView)
+        view.addSubview(recorderButton)
+        view.addSubview(gifButton)
+        view.addSubview(pauseButton)
+
+
+    }
+
+    //MARK: initializingControlls
+    ///
     func initializingControlls(){
 
-        view.backgroundColor = .clear
+        view.backgroundColor = UIColor.clear
         arView.translatesAutoresizingMaskIntoConstraints = false
         arView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         arView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -208,217 +380,191 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
         arView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
 
 
-        resetbutton.translatesAutoresizingMaskIntoConstraints = false
 
-        resetbutton.topAnchor.constraint(equalTo: view.topAnchor).isActive = false
-        resetbutton.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        resetbutton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        resetbutton.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+
+
+
+
+
+
+
+
+        // Add a gesture recognizer
+        let tapGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(scalePiece))
+        arView.addGestureRecognizer(tapGestureRecognizer)
+        tapGestureRecognizer.cancelsTouchesInView = false
+
+
+        // Add a pan gesture recognizer
+        let gestureRecognize = UIPanGestureRecognizer(target: self, action: #selector(moveNode))
+        arView.addGestureRecognizer(gestureRecognize)
+
+
+        //Add a pan gesture recognier For Remove Node
+        let removegestureRecognize = UILongPressGestureRecognizer(target: self, action: #selector(removeNode))
+        arView.addGestureRecognizer(removegestureRecognize)
+        removegestureRecognize.minimumPressDuration = 0.5
+
+
+
+
 
     }
 
+    //MARK:Video Editor Description
+    //Do not delete "Video-Temp.mp4" because this is temp video file, we'll make sure our video can be found
 
-    func RGBtoHSV(r : Float, g : Float, b : Float) -> (h : Float, s : Float, v : Float) {
-        var h : CGFloat = 0
-        var s : CGFloat = 0
-        var v : CGFloat = 0
-        let col = UIColor(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
-        col.getHue(&h, saturation: &s, brightness: &v, alpha: nil)
-        return (Float(h), Float(s), Float(v))
+
+
+
+}
+//MARK: Button Action Methods
+extension sceneViewController{
+
+    // MARK:Take a RecordVideo
+    //
+    @objc func recorderAction(sender:UIButton){
+
+        if recorder?.status == .readyToRecord{
+            //start recording
+
+            recorder?.record()
+            //change button title
+            sender.setTitle("Stop", for: .normal)
+            sender.setTitleColor(.red, for: .normal)
+            //enable pause button
+            pauseButton.alpha = 1
+            pauseButton.isEnabled = true
+
+            //Disable GIF button
+            gifButton.alpha = 0.3
+            gifButton.isEnabled = false
+
+
+        }
+
+
+
+        else if recorder?.status == .recording || recorder?.status == .paused {
+
+            //stop recording and export vidoe to camera roll
+
+            recorder?.stopAndExport()
+
+            //change button title
+
+            sender.setTitle("Record", for: .normal)
+            sender.setTitleColor(.black, for: .normal)
+
+
+            //enable GIF button
+
+            gifButton.alpha = 1
+            gifButton.isEnabled = true
+
+            //Disable pause button
+
+            pauseButton.alpha = 0.3
+            pauseButton.isEnabled = false
+        }
     }
 
-    func colorCubeFilterForChromaKey(hueAngle: Float) -> CIFilter {
+    //MARK:Pause and resume method
+    //
+    @objc func pauseAction(sender:UIButton){
 
-        // minHueAngle: Sets the lower limit for the color to filter out. Applies to HSV color.
-        // maxHueAngle: Sets the upper limit for the color to filter out. Applies to HSV color.
-        // hueRange: Sets the range between lower and upper limits. Applies to HSV color.
-        //
-        // NOTE: yellow, for example, is a shade of green. So, make sure hueRange does not include colors like yellow.
-        //
-        // color range explained here: https://en.wikibooks.org/wiki/Color_Models:_RGB,_HSV,_HSL
 
-        let hueRange: Float = 80 // degrees size pie shape that we want to replace
-        let minHueAngle: Float = (hueAngle - hueRange/2.0) / 360
-        let maxHueAngle: Float = (hueAngle + hueRange/2.0) / 360
+        // Pause recording
 
-        let size = 64
-        var cubeData = [Float](repeating: 0, count: size * size * size * 4)
-        var rgb: [Float] = [0, 0, 0]
-        var hsv: (h : Float, s : Float, v : Float)
-        var offset = 0
+        if recorder?.status == .recording{
 
-        for z in 0 ..< size {
-            rgb[2] = Float(z) / Float(size) // blue value
-            for y in 0 ..< size {
-                rgb[1] = Float(y) / Float(size) // green value
-                for x in 0 ..< size {
+            recorder?.pause()
 
-                    rgb[0] = Float(x) / Float(size) // red value
-                    hsv = RGBtoHSV(r: rgb[0], g: rgb[1], b: rgb[2])
-                    // TODO: Check if hsv.s > 0.5 is really nesseccary
-                    let alpha: Float = (hsv.h > minHueAngle && hsv.h < maxHueAngle && hsv.s > 0.5) ? 0 : 1.0
+            //Change button title
 
-                    cubeData[offset] = rgb[0] * alpha
-                    cubeData[offset + 1] = rgb[1] * alpha
-                    cubeData[offset + 2] = rgb[2] * alpha
-                    cubeData[offset + 3] = alpha
-                    offset += 4
+            sender.setTitle("Resume", for: .normal)
+            sender.setTitleColor(.blue, for: .normal)
+
+        }
+        else if recorder?.status == .paused{
+
+            //Resume recording
+
+            recorder?.record()
+
+            //Change button title
+            sender.setTitle("Pause", for: .normal)
+            sender.setTitleColor(.black, for: .normal)
+
+        }
+    }
+
+    //MARK:Capture  GIF method
+    //
+
+    @objc func gifAction(sender:UIButton){
+
+
+        self.gifButton.isEnabled = false
+        self.gifButton.alpha = 0.3
+        self.recorderButton.isEnabled = false
+        self.recorderButton.alpha = 0.3
+
+        recorder?.gif(forDuration: 1.5, export: true){ _, _, _,exported in
+
+            if exported{
+
+                DispatchQueue.main.sync{
+                    self.gifButton.isEnabled = true
+                    self.gifButton.alpha = 1
+                    self.recorderButton.isEnabled = true
+                    self.recorderButton.alpha = 1
+
                 }
+
             }
         }
-        let b = cubeData.withUnsafeBufferPointer { Data(buffer: $0) }
-        let data = b as NSData
-
-        let colorCube = CIFilter(name: "CIColorCube", parameters: [
-            "inputCubeDimension": size,
-            "inputCubeData": data
-            ])
-        return colorCube!
-    }
-
-
-}
-
-
-//----------------------------------------------------
-//MARK: VIewController Extensions For Setting Up ARKit
-//----------------------------------------------------
-
-extension UIViewController{
-
-    /// The Type Of Plane Detection Needed During The ARSession
-    ///
-    /// - Horizontal: Horizontal Plane Detection
-    /// - Vertical: Vertical Plane Detection
-    /// - Both: Horizontal & Vertical Plane Detection
-    /// - None: No Plane Detection
-    enum ARPlaneDetection {
-
-        case Horizontal, Vertical, Both, None
-    }
-
-    /// The Type Of Debug Options Needed During The ARSession
-    ///
-    /// - FeaturePoints: Show Feature Points
-    /// - WorldOrigin: Show The World Origin
-    /// - Both: Show Both Feature Points & The World Origin
-    /// - **None**: Show None (Development Build)
-    enum ARDebugOptions{
-
-        case FeaturePoints, WorldOrigin, Both, None
-    }
-
-    /// The Type Of ARConfiguration Needed
-    ///
-    /// - ResetTracking: Resets World Tracking
-    /// - RemoveAnchors: Removes All Existing Session Anchors
-    /// - **ResetAndRemove**: Resets World Tracking & Removes All Existing Anchors
-    /// - None: No Congifuration
-    enum ARConfigurationOptions{
-
-        case ResetTracking, RemoveAnchors, ResetAndRemove, None
-
-    }
-
-    /// Sets The ARSession Debug Options
-    ///
-    /// - Parameter options: ARDebugOptions
-    /// - Returns: SCNDebugOptions
-    func debug(_ options: ARDebugOptions) -> SCNDebugOptions{
-
-        switch options {
-
-        case .FeaturePoints:
-            return [ARSCNDebugOptions.showFeaturePoints]
-        case .WorldOrigin:
-            return [ARSCNDebugOptions.showWorldOrigin]
-        case .Both:
-            return [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
-        case .None:
-            return []
-        }
-    }
-
-    /// Sets The ARSession Run Options
-    ///
-    /// - Parameter configuration: ARConfigurationOptions
-    /// - Returns: ARSession.RunOptions
-    func runOptions(_ configuration: ARConfigurationOptions) -> ARSession.RunOptions{
-
-        switch configuration {
-
-        case .ResetTracking:
-            return [.resetTracking]
-        case .RemoveAnchors:
-            return [.removeExistingAnchors]
-        case .ResetAndRemove:
-            return [.resetTracking, .removeExistingAnchors ]
-        case .None:
-            return []
-        }
-    }
-}
-
-//------------------------------------------------
-//MARK: ARSession Extension To Log Tracking States
-//------------------------------------------------
-
-extension ARCamera.TrackingState: CustomStringConvertible{
-
-    public var description: String {
-
-        switch self {
-
-        case .notAvailable:                         return "Tracking Unavailable"
-        case .limited(.excessiveMotion):            return "Please Slow Your Movement"
-        case .limited(.insufficientFeatures):       return "Try To Point At A Flat Surface"
-        case .limited(.initializing):               return "Initializing"
-        case .limited(.relocalizing):               return "Relocalizing"
-        case .normal:                               return ""
-        case .limited(_):
-            return "no Descripted"
-        }
-    }
-
-}
-
-//-------------------------------
-//MARK ARFrame WorldMappingStatus
-//-------------------------------
-
-
-@available(iOS 12.0, *)
-extension ARFrame.WorldMappingStatus: CustomStringConvertible{
-
-    public var description: String {
-        switch self {
-        case .notAvailable:
-            return "World Mapping Not Available"
-        case .limited:
-            return "World Mapping Is Limited"
-        case .extending:
-            return "World Mapping Is Extending"
-        case .mapped:
-            return "World Is Succesfully Mapped"
-        default:
-            return "?"
-
-        }
 
     }
 }
 
-//--------------------------------------------
-//MARK: ARSCNView Extension For Lighting Setup
-//--------------------------------------------
+// MARK: - UIVideoEditorControllerDelegate
 
-extension ARSCNView{
+extension sceneViewController: UINavigationControllerDelegate {
 
-    /// Applies Auto Lighting Of The ARSCNView
-    func applyLighting() {
-        self.autoenablesDefaultLighting = true
-        self.automaticallyUpdatesLighting = true
+
+
+    // After picking a video, we dismiss the picker view controller and present the editor view controller
+    private func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        let videoURL = info["UIImagePickerControllerReferenceURL"] as? URL
+        self.dismiss(animated: true, completion: nil)
+
+        // We create a VideoEditorViewController to play video as well as for editing purpose
+        let videoEditorViewController = VideoEditorViewController()
+        videoEditorViewController.videoURL = videoURL
+        videoEditorViewController.videoAsset = AVURLAsset(url: videoURL!)
+        videoEditorViewController.transitioningDelegate = self as UIViewControllerTransitioningDelegate
+        self.present(videoEditorViewController, animated: true, completion: nil)
     }
 }
 
+/**
+ Conform to UIViewControllerTransitioningDelegate to performs custom transisioning animation
+ */
+extension sceneViewController: UIViewControllerTransitioningDelegate {
 
+    // Custom presentation animation
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+
+        transition.transitionMode = .present
+        return transition
+    }
+
+    // Custom dismission animation
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+
+        transition.transitionMode = .dismiss
+        return transition
+    }
+}
+ 
