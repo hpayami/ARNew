@@ -23,6 +23,7 @@
 		69943DF722888FEC004DBDF2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 69943DF522888FEC004DBDF2 /* LaunchScreen.storyboard */; };
 		69943DFF22889633004DBDF2 /* sceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69943DFE22889633004DBDF2 /* sceneViewController.swift */; };
 		69943E01228B124C004DBDF2 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 69943E00228B124C004DBDF2 /* art.scnassets */; };
+		699FFF1222D79461007E6C0A /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 699FFF1122D79461007E6C0A /* StoreKit.framework */; };
 		69C8F2B4228B1C3900BF76DC /* melissa.MOV in Resources */ = {isa = PBXBuildFile; fileRef = 69C8F2B2228B1C3900BF76DC /* melissa.MOV */; };
 		69C8F2B5228B1C3900BF76DC /* simple.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 69C8F2B3228B1C3900BF76DC /* simple.mp4 */; };
 		69D2F39122A25E840017DA8C /* UIViewController+hasType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D2F37C22A25E820017DA8C /* UIViewController+hasType.swift */; };
@@ -79,6 +80,7 @@
 		69943DF822888FEC004DBDF2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69943DFE22889633004DBDF2 /* sceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sceneViewController.swift; sourceTree = "<group>"; };
 		69943E00228B124C004DBDF2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		699FFF1122D79461007E6C0A /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		69C8F2B2228B1C3900BF76DC /* melissa.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = melissa.MOV; sourceTree = "<group>"; };
 		69C8F2B3228B1C3900BF76DC /* simple.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = simple.mp4; sourceTree = "<group>"; };
 		69D2F37C22A25E820017DA8C /* UIViewController+hasType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+hasType.swift"; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 				690E112722C4E2CE0073B438 /* HomeKit.framework in Frameworks */,
 				690E112D22C4E2CE0073B438 /* ExternalAccessory.framework in Frameworks */,
 				690E112522C4E2CE0073B438 /* HealthKit.framework in Frameworks */,
+				699FFF1222D79461007E6C0A /* StoreKit.framework in Frameworks */,
 				690E112B22C4E2CE0073B438 /* MapKit.framework in Frameworks */,
 				690E112922C4E2CE0073B438 /* AudioToolbox.framework in Frameworks */,
 			);
@@ -159,6 +162,7 @@
 		69D2F36E22A2588A0017DA8C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				699FFF1122D79461007E6C0A /* StoreKit.framework */,
 				690E112C22C4E2CE0073B438 /* ExternalAccessory.framework */,
 				690E112A22C4E2CE0073B438 /* MapKit.framework */,
 				690E112822C4E2CE0073B438 /* AudioToolbox.framework */,
