@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		690D75A222C1D1780088CEFB /* Video-Temp.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 690D75A122C1D1780088CEFB /* Video-Temp.mp4 */; };
 		690E112522C4E2CE0073B438 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 690E112422C4E2CE0073B438 /* HealthKit.framework */; };
 		690E112722C4E2CE0073B438 /* HomeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 690E112622C4E2CE0073B438 /* HomeKit.framework */; };
 		690E112922C4E2CE0073B438 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 690E112822C4E2CE0073B438 /* AudioToolbox.framework */; };
@@ -18,7 +17,6 @@
 		6983DA60228BD68600D8498E /* ChromaKeyMaterial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6983DA5F228BD68600D8498E /* ChromaKeyMaterial.swift */; };
 		6983DA62228BDA1800D8498E /* playdoh-bat.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6983DA61228BDA1800D8498E /* playdoh-bat.mp4 */; };
 		6983DA66228BDDD500D8498E /* Adriana.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6983DA63228BDDD500D8498E /* Adriana.mp4 */; };
-		6983DA67228BDDD500D8498E /* Kimya.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6983DA64228BDDD500D8498E /* Kimya.mp4 */; };
 		6983DA68228BDDD500D8498E /* Blast_Effect.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 6983DA65228BDDD500D8498E /* Blast_Effect.mp4 */; };
 		6983DA6A228BEB4500D8498E /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6983DA69228BEB4500D8498E /* Media.xcassets */; };
 		69943DED22888FEB004DBDF2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69943DEC22888FEB004DBDF2 /* AppDelegate.swift */; };
@@ -61,7 +59,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		690D75A122C1D1780088CEFB /* Video-Temp.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Video-Temp.mp4"; path = "Video Temp/Video-Temp.mp4"; sourceTree = "<group>"; };
 		690E112422C4E2CE0073B438 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		690E112622C4E2CE0073B438 /* HomeKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HomeKit.framework; path = System/Library/Frameworks/HomeKit.framework; sourceTree = SDKROOT; };
 		690E112822C4E2CE0073B438 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -74,7 +71,6 @@
 		6983DA5F228BD68600D8498E /* ChromaKeyMaterial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromaKeyMaterial.swift; sourceTree = "<group>"; };
 		6983DA61228BDA1800D8498E /* playdoh-bat.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "playdoh-bat.mp4"; sourceTree = "<group>"; };
 		6983DA63228BDDD500D8498E /* Adriana.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Adriana.mp4; sourceTree = "<group>"; };
-		6983DA64228BDDD500D8498E /* Kimya.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Kimya.mp4; sourceTree = "<group>"; };
 		6983DA65228BDDD500D8498E /* Blast_Effect.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Blast_Effect.mp4; sourceTree = "<group>"; };
 		6983DA69228BEB4500D8498E /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		69943DE922888FEB004DBDF2 /* ARNew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ARNew.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,7 +79,6 @@
 		69943DF822888FEC004DBDF2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		69943DFE22889633004DBDF2 /* sceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sceneViewController.swift; sourceTree = "<group>"; };
 		69943E00228B124C004DBDF2 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		69AAD6F122D1DA3900C5880D /* ARNew.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ARNew.entitlements; sourceTree = "<group>"; };
 		69C8F2B2228B1C3900BF76DC /* melissa.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = melissa.MOV; sourceTree = "<group>"; };
 		69C8F2B3228B1C3900BF76DC /* simple.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = simple.mp4; sourceTree = "<group>"; };
 		69D2F37C22A25E820017DA8C /* UIViewController+hasType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+hasType.swift"; sourceTree = "<group>"; };
@@ -142,18 +137,14 @@
 		69943DEB22888FEB004DBDF2 /* ARNew */ = {
 			isa = PBXGroup;
 			children = (
-				69E7702D22CDDD9A0022648F /* Video */,
 				69943E00228B124C004DBDF2 /* art.scnassets */,
 				69943DEC22888FEB004DBDF2 /* AppDelegate.swift */,
-				69AAD6F122D1DA3900C5880D /* ARNew.entitlements */,
-				690D75A122C1D1780088CEFB /* Video-Temp.mp4 */,
 				69943DFE22889633004DBDF2 /* sceneViewController.swift */,
 				6983DA5F228BD68600D8498E /* ChromaKeyMaterial.swift */,
 				69C8F2B2228B1C3900BF76DC /* melissa.MOV */,
 				691C108722958C390025E77C /* Wolfgang.mp4 */,
 				6983DA63228BDDD500D8498E /* Adriana.mp4 */,
 				6983DA65228BDDD500D8498E /* Blast_Effect.mp4 */,
-				6983DA64228BDDD500D8498E /* Kimya.mp4 */,
 				6983DA61228BDA1800D8498E /* playdoh-bat.mp4 */,
 				69C8F2B3228B1C3900BF76DC /* simple.mp4 */,
 				69943DF522888FEC004DBDF2 /* LaunchScreen.storyboard */,
@@ -202,13 +193,6 @@
 				69D2F38822A25E830017DA8C /* WritAR.swift */,
 			);
 			path = ARVideoKit;
-			sourceTree = "<group>";
-		};
-		69E7702D22CDDD9A0022648F /* Video */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Video;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -270,10 +254,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6983DA67228BDDD500D8498E /* Kimya.mp4 in Resources */,
 				69943DF722888FEC004DBDF2 /* LaunchScreen.storyboard in Resources */,
 				69C8F2B4228B1C3900BF76DC /* melissa.MOV in Resources */,
-				690D75A222C1D1780088CEFB /* Video-Temp.mp4 in Resources */,
 				6983DA66228BDDD500D8498E /* Adriana.mp4 in Resources */,
 				69943E01228B124C004DBDF2 /* art.scnassets in Resources */,
 				6983DA62228BDA1800D8498E /* playdoh-bat.mp4 in Resources */,
@@ -381,7 +363,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -438,7 +420,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -455,8 +437,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = ARNew/ARNew.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NSKQUTV6W6;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -483,8 +464,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = ARNew/ARNew.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = NSKQUTV6W6;
 				FRAMEWORK_SEARCH_PATHS = (
