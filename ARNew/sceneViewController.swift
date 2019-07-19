@@ -15,6 +15,12 @@ import MobileCoreServices
 
 class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate  {
     
+   
+    
+    
+    
+    
+    
     //MARK: Declaration
     
     // For rotataion of videonode
@@ -136,6 +142,8 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
     }()
     override func viewDidLoad() {
         super.viewDidLoad()
+         
+        
         // Set the View's delegate
         arView.delegate = self
         
@@ -146,9 +154,7 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
         
         
         
-        
-        
-        arView.preferredFramesPerSecond = 30
+        arView.preferredFramesPerSecond = 60
         arView.contentScaleFactor = 1.0
         
         //Call Methods
@@ -163,11 +169,8 @@ class sceneViewController: UIViewController,ARSCNViewDelegate,ARSessionDelegate 
         //initialize ARSCNView
         recorder = RecordAR(ARSceneKit: arView)
         recorder?.inputViewOrientations = [.portrait]
-        
     }
-    
-    
-    
+   
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

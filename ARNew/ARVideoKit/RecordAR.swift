@@ -11,6 +11,24 @@ import Metal
 import ARKit
 import Photos
 import PhotosUI
+
+private var view: Any?
+private var renderEngine: SCNRenderer!
+private var gpuLoop: CADisplayLink!
+private var isResting = false
+private var ARcontentMode: ARFrameMode!
+@available(iOS 11.0, *)
+private var renderer: RenderAR!
+/**
+ This class renders the `ARSCNView` or `ARSKView` content with the device's camera stream to generate a video 📹, photo 🌄, live photo 🎇 or GIF 🎆.
+ 
+ - Author: 🤓 Ahmed Fathi Bekhit © 2017
+ * [Github](http://github.com/AFathi)
+ * [Website](http://ahmedbekhit.com)
+ * [Twitter](http://twitter.com/iAFapps)
+ * [Email](mailto:me@ahmedbekhit.com)
+ */
+ 
  
  
 @objc public class RecordAR: ARView {
@@ -153,13 +171,6 @@ import PhotosUI
     let audioSessionQueue = DispatchQueue(label: "com.payami.AudioSessionQueue", attributes: .concurrent)
     
     //MARK: - Objects
-    private var view: Any?
-    private var renderEngine: SCNRenderer!
-    private var gpuLoop: CADisplayLink!
-    private var isResting = false
-    private var ARcontentMode: ARFrameMode!
-    private var renderer: RenderAR!
-
     private var scnView: SCNView!
     private var fileCount = 0
     
@@ -173,7 +184,6 @@ import PhotosUI
         }
         return nil
     }
-    
     //Used for gif capturing
     var gifImages:[UIImage] = []
     //Used for checking current recorder status
@@ -202,7 +212,7 @@ import PhotosUI
         formatter.dateStyle = .full
         formatter.timeStyle = .full
         formatter.dateFormat = "yyyy-MM-dd'@'HH-mm-ssZZZZ"
-
+        
         let date = Date(timeIntervalSince1970: Date().timeIntervalSince1970)
         
         let vidPath = "\(documentsDirectory)/\(formatter.string(from: date))ARVideo.mp4"
@@ -369,8 +379,8 @@ import PhotosUI
                     self.isRecording = true
                     self.status = .recording
                     DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                        self.stop { newVideoPath in
-                            finished?(newVideoPath)
+                        self.stop { path in
+                            finished?(path)
                         }
                     }
                 }
@@ -379,12 +389,12 @@ import PhotosUI
                 self.isRecording = true
                 self.status = .recording
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                    self.stop { newVideoPath in
-                        finished?(newVideoPath)
+                    self.stop { path in
+                        finished?(path)
                     }
                 }
             }
-
+            
         }
     }
     /**
@@ -417,7 +427,7 @@ import PhotosUI
         `exported`
         A boolean that returns `true` when a video is successfully exported to the Photo Library. Otherwise, it returns `false`.
      */
-    @objc public func stopAndExport(_ finished: ((_ videoPath: URL?, _ permissionStatus: PHAuthorizationStatus, _ exported: Bool) -> Swift.Void)? = nil) {
+    @objc public func stopAndExport(_ finished: ((_ videoPath: URL, _ permissionStatus: PHAuthorizationStatus, _ exported: Bool) -> Swift.Void)? = nil) {
         writerQueue.sync {
             self.isRecording = false
             self.adjustPausedTime = false
@@ -426,19 +436,12 @@ import PhotosUI
             
             self.pausedFrameTime = nil
             self.resumeFrameTime = nil
-
-
-
+            
             self.writer?.end {
-
-
-                if let path = self.newVideoPath.baseURL {
-
-                    self.export(video: path) { exported, status in finished?(path, status, exported)}
-
-
-
-
+                if let path = self.currentVideoPath {
+                    self.export(video: path) { exported, status in
+                        finished?(path, status, exported)
+                    }
                     self.delegate?.recorder(didEndRecording: path, with: true)
                     self.status = .readyToRecord
                 } else {
@@ -473,7 +476,7 @@ import PhotosUI
             DispatchQueue.main.async {
                 self.writer?.end {
                     if let path = self.currentVideoPath {
-                        finished?(self.newVideoPath)
+                        finished?(path)
                         self.delegate?.recorder(didEndRecording: path, with: true)
                         self.status = .readyToRecord
                     } else {
@@ -502,16 +505,11 @@ import PhotosUI
      */
     @objc public func export(video path: URL, _ finished: ((_ exported: Bool, _ permissionStatus: PHAuthorizationStatus) -> Void)? = nil) {
         audioSessionQueue.async {
-
-
             let status = PHPhotoLibrary.authorizationStatus()
             if status == .notDetermined {
                 PHPhotoLibrary.requestAuthorization() { status in
-
-
                     // Recursive call after authorization request
                     self.export(video: path, finished)
-
                 }
             } else if status == .authorized {
                 PHPhotoLibrary.shared().performChanges({
@@ -568,8 +566,6 @@ import PhotosUI
             finished?(false, status)
         }
     }
-
-    
     /**
      A method that requsts microphone 🎙 permission manually, if micPermission is set to `manual`.
      - parameter finished: A block that will be called when the audio permission is requested.
